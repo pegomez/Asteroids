@@ -151,6 +151,7 @@ class AsteroidsSprite {
     }
 }
 
+
 /******************************************************************************
  Main applet code.
  ******************************************************************************/
@@ -173,9 +174,8 @@ public class Asteroids extends Applet implements Runnable, KeyListener {
 
     // Constants
 
-    static final int DELAY = 20;             // Milliseconds between screen and
-    static final int FPS   =                 // the resulting frame rate.
-            Math.round(1000 / DELAY);
+    static final int DELAY = 20;                         // Milliseconds between screen and
+    static final int FPS   = Math.round(1000 / DELAY);   // the resulting frame rate.
 
     static final int MAX_SHOTS =  8;          // Maximum number of sprites
     static final int MAX_ROCKS =  8;          // for photons, asteroids and
@@ -194,10 +194,8 @@ public class Asteroids extends Applet implements Runnable, KeyListener {
     static final double MAX_ROCK_SPEED = 240.0 / FPS;
     static final double MAX_ROCK_SPIN  = Math.PI / FPS;
 
-    static final int MAX_SHIPS = 3;           // Starting number of ships for
-    // each game.
-    static final int UFO_PASSES = 3;          // Number of passes for flying
-    // saucer per appearance.
+    static final int MAX_SHIPS = 3;           // Starting number of ships for each game.
+    static final int UFO_PASSES = 3;          // Number of passes for flying saucer per appearance.
 
     // Ship's rotation and acceleration rates and maximum speed.
 
@@ -205,11 +203,9 @@ public class Asteroids extends Applet implements Runnable, KeyListener {
     static final double SHIP_SPEED_STEP = 15.0 / FPS;
     static final double MAX_SHIP_SPEED  = 1.25 * MAX_ROCK_SPEED;
 
-    static final int FIRE_DELAY = 50;         // Minimum number of milliseconds
-    // required between photon shots.
+    static final int FIRE_DELAY = 50;         // Minimum number of milliseconds required between photon shots.
 
-    // Probablility of flying saucer firing a missle during any given frame
-    // (other conditions must be met).
+    // Probablility of flying saucer firing a missle during any given frame (other conditions must be met).
 
     static final double MISSLE_PROBABILITY = 0.45 / FPS;
 
