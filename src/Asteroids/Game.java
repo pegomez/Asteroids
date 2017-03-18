@@ -12,7 +12,6 @@ import java.net.URL;
 public class Game extends Applet implements Runnable, KeyListener {
 
     // Copyright information.
-
     String copyName = "Asteroids";
     String copyVers = "Version 1.3";
     String copyInfo = "Copyright 1998-2001 by Mike Hall";
@@ -21,12 +20,11 @@ public class Game extends Applet implements Runnable, KeyListener {
             + copyInfo + '\n' + copyLink;
 
     // Thread control variables.
-
     Thread loadThread;
     Thread loopThread;
+    Game game = new Game();
 
     // Constants
-
     static final int DELAY = 20;                         // Milliseconds between screen and
     static final int FPS = Math.round(1000 / DELAY);   // the resulting frame rate.
 
@@ -51,7 +49,6 @@ public class Game extends Applet implements Runnable, KeyListener {
     static final int UFO_PASSES = 3;          // Number of passes for flying saucer per appearance.
 
     // Ship's rotation and acceleration rates and maximum speed.
-
     static final double SHIP_ANGLE_STEP = Math.PI / FPS;
     static final double SHIP_SPEED_STEP = 15.0 / FPS;
     static final double MAX_SHIP_SPEED = 1.25 * MAX_ROCK_SPEED;
@@ -59,7 +56,6 @@ public class Game extends Applet implements Runnable, KeyListener {
     static final int FIRE_DELAY = 50;         // Minimum number of milliseconds required between photon shots.
 
     // Probablility of flying saucer firing a missle during any given frame (other conditions must be met).
-
     static final double MISSLE_PROBABILITY = 0.45 / FPS;
 
     static final int BIG_POINTS = 25;     // Points scored for shooting
@@ -68,41 +64,33 @@ public class Game extends Applet implements Runnable, KeyListener {
     static final int MISSLE_POINTS = 500;
 
     // Background stars.
-
     int numStars;
     Point[] stars;
 
     // Number of points the must be scored to earn a new ship or to cause the
     // flying saucer to appear.
-
     static final int NEW_SHIP_POINTS = 5000;
     static final int NEW_UFO_POINTS = 2750;
 
     // Game data.
-
     int score;
     int highScore;
 
-
     // Flags for game state and options.
-
-    boolean loaded = false;
+    private boolean loaded = false;
     boolean paused;
     boolean playing;
     boolean sound;
     boolean detail;
 
     // Key flags.
-
     boolean left = false;
     boolean right = false;
     boolean up = false;
     boolean down = false;
 
     // Sprite objects.
-
     Ship ship;
-    Thruster fwdThruster, revThruster;
     Ufo ufo;
     Missile missile;
     Photon[] photons = new Photon[MAX_SHOTS];
@@ -113,22 +101,30 @@ public class Game extends Applet implements Runnable, KeyListener {
     Sound sounds = new Sound();
 
     // Off screen image.
-
     Dimension offDimension;
     Image offImage;
     Graphics offGraphics;
 
     // Data for the screen font.
-
     Font font = new Font("Helvetica", Font.BOLD, 12);
     FontMetrics fm = getFontMetrics(font);
     int fontWidth = fm.getMaxAdvance();
     int fontHeight = fm.getHeight();
 
+    // Varaibles related with the game
+    int asteroidsCounter;                            // Break-time counter.
+    int asteroidsLeft;                               // Number of active asteroids.
+    int shipsLeft;              // Number of ships left in game, including current one.
+    int shipCounter;            // Timer counter for ship explosion.
+    int hyperCounter;   // Timer counter for hyperspace.
+    int missileCounter;    // Counter for life of missle.
+    int[] explosionCounter = new int[MAX_SCRAP];  // Time counters for explosions.
+    long  photonTime;     // Time value used to keep firing rate constant.
+    int   photonIndex;    // Index to next available photon sprite.
+
     public String getAppletInfo() {
 
         // Return copyright information.
-
         return (copyText);
     }
 
@@ -161,10 +157,6 @@ public class Game extends Applet implements Runnable, KeyListener {
         // Create shape for the ship sprite.
         ship = new Ship();
 
-        // Create shapes for the ship thrusters.
-        fwdThruster = new Thruster(true);
-        revThruster = new Thruster(false);
-
         // Create shape for each photon sprites.
         for (i = 0; i < MAX_SHOTS; i++) {
             photons[i] = new Photon();
@@ -196,27 +188,65 @@ public class Game extends Applet implements Runnable, KeyListener {
 
         // Initialize game data and sprites.
         score = 0;
-        ship.shipsLeft = MAX_SHIPS;
-        for (Asteroid asteroid : asteroids){
-            asteroid.asteroidsSpeed = MIN_ROCK_SPEED;
+        shipsLeft = MAX_SHIPS;
+        for (int i = 0; i<asteroids.length;i++){
+            asteroids[i].asteroidsSpeed = MIN_ROCK_SPEED;
         }
         ship.newShipScore = NEW_SHIP_POINTS;
         ufo.newUfoScore = NEW_UFO_POINTS;
 
-        initShip();
-        initPhotons();
-        stopUfo();
-        stopMissle();
-        initAsteroids();
-        initExplosions();
+        ship.initShip();
+
+        if (loaded)
+            sounds.thrustersSound.stop();
+            sounds.thrustersPlaying = false;
+        hyperCounter = 0;
+
+        for(int i = 0;i<photons.length;i++){
+            photons[i].initPhoton();
+        }
+        photonIndex = 0;
+
+        ufo.stopUfo();
+        if (loaded)
+            sounds.saucerSound.stop();
+            sounds.saucerPlaying = false;
+
+        missile.stopMissle();
+        if (loaded)
+            sounds.missileSound.stop();
+            sounds.missilePlaying = false;
+        missileCounter = 0;
+
+        for(int i = 0;i<asteroids.length;i++){
+            asteroids[i].initAsteroid();
+        }
+        asteroidsCounter = STORM_PAUSE;
+        asteroidsLeft = MAX_ROCKS;
+
+        for(int i = 0;i<explosions.length;i++){
+            explosions[i].initExplosion();
+            explosionCounter[i] = 0;
+        }
         playing = true;
         paused = false;
         photonTime = System.currentTimeMillis();
     }
 
+    public void endGame() {
+
+        // Stop ship, flying saucer, guided missile and associated sounds.
+
+        playing = false;
+        ship.stopShip();
+        ufo.stopUfo();
+        missile.stopMissle();
+    }
+
     public void run() {
 
         int i, j;
+        int shipU = 0;
         long startTime;
 
         // Lower this thread's priority and get the current time.
@@ -226,9 +256,9 @@ public class Game extends Applet implements Runnable, KeyListener {
 
         // Run thread for loading sounds.
 
-        if (!loaded && Thread.currentThread() == loadThread) {
+        if (!isLoaded() && Thread.currentThread() == loadThread) {
             sounds.loadSounds();
-            loaded = true;
+            setLoaded(true);
             loadThread.stop();
         }
 
@@ -239,10 +269,24 @@ public class Game extends Applet implements Runnable, KeyListener {
             if (!paused) {
 
                 // Move and process all sprites.
+                if (playing) {
+                    shipU = ship.updateShip(right,left,up,down,hyperCounter,shipCounter,shipsLeft);
+                }
+                if (shipU == HYPER_COUNT){
+                    ship.initShip();
+                    if (loaded)
+                        sounds.thrustersSound.stop();
+                    sounds.thrustersPlaying = false;
+                    hyperCounter = 0;
+                }
+                else endGame();
 
-                updateShip();
-                updatePhotons();
-                updateUfo();
+                for (int w = 0;w<photons.length;w++){
+                    photons[w].updatePhoton();
+                }
+
+                ufo.updateUfo();
+
                 updateMissle();
                 updateAsteroids();
                 updateExplosions();
@@ -252,13 +296,14 @@ public class Game extends Applet implements Runnable, KeyListener {
 
                 if (score > highScore)
                     highScore = score;
-                if (score > newShipScore) {
-                    newShipScore += NEW_SHIP_POINTS;
+                if (score > ship.newShipScore) {
+                    ship.newShipScore += NEW_SHIP_POINTS;
                     shipsLeft++;
                 }
-                if (playing && score > newUfoScore && !ufo.active) {
-                    newUfoScore += NEW_UFO_POINTS;
-                    ufoPassesLeft = UFO_PASSES;
+                if (playing && score > ufo.newUfoScore && !ufo.active) {
+                    ufo.newUfoScore += NEW_UFO_POINTS;
+                    ufo.ufoPassesLeft = UFO_PASSES;
+                    // INIT UFO
                     initUfo();
                 }
 
@@ -266,6 +311,7 @@ public class Game extends Applet implements Runnable, KeyListener {
 
                 if (asteroidsLeft <= 0)
                     if (--asteroidsCounter <= 0)
+                        //INIT ASTEROIDS
                         initAsteroids();
             }
 
@@ -281,9 +327,6 @@ public class Game extends Applet implements Runnable, KeyListener {
             }
         }
     }
-
-
-
 
 
     public void keyPressed(KeyEvent e) {
@@ -335,7 +378,7 @@ public class Game extends Applet implements Runnable, KeyListener {
             ship.y = Math.random() * AsteroidsSprite.height;
             hyperCounter = HYPER_COUNT;
             if (sound & !paused)
-                warpSound.play();
+                sounds.warpSound.play();
         }
 
         // 'P' key: toggle pause mode and start or stop any active looping sound
@@ -343,43 +386,43 @@ public class Game extends Applet implements Runnable, KeyListener {
 
         if (c == 'p') {
             if (paused) {
-                if (sound && misslePlaying)
-                    missleSound.loop();
-                if (sound && saucerPlaying)
-                    saucerSound.loop();
-                if (sound && thrustersPlaying)
-                    thrustersSound.loop();
+                if (sound && sounds.missilePlaying)
+                    sounds.missileSound.loop();
+                if (sound && sounds.saucerPlaying)
+                    sounds.saucerSound.loop();
+                if (sound && sounds.thrustersPlaying)
+                    sounds.thrustersSound.loop();
             }
             else {
-                if (misslePlaying)
-                    missleSound.stop();
-                if (saucerPlaying)
-                    saucerSound.stop();
-                if (thrustersPlaying)
-                    thrustersSound.stop();
+                if (sounds.missilePlaying)
+                    sounds.missileSound.stop();
+                if (sounds.saucerPlaying)
+                    sounds.saucerSound.stop();
+                if (sounds.thrustersPlaying)
+                    sounds.thrustersSound.stop();
             }
             paused = !paused;
         }
 
         // 'M' key: toggle sound on or off and stop any looping sound clips.
 
-        if (c == 'm' && loaded) {
+        if (c == 'm' && isLoaded()) {
             if (sound) {
-                crashSound.stop();
-                explosionSound.stop();
-                fireSound.stop();
-                missleSound.stop();
-                saucerSound.stop();
-                thrustersSound.stop();
-                warpSound.stop();
+                sounds.crashSound.stop();
+                sounds.explosionSound.stop();
+                sounds.fireSound.stop();
+                sounds.missileSound.stop();
+                sounds.saucerSound.stop();
+                sounds.thrustersSound.stop();
+                sounds.warpSound.stop();
             }
             else {
-                if (misslePlaying && !paused)
-                    missleSound.loop();
-                if (saucerPlaying && !paused)
-                    saucerSound.loop();
-                if (thrustersPlaying && !paused)
-                    thrustersSound.loop();
+                if (sounds.missilePlaying && !paused)
+                    sounds.missileSound.loop();
+                if (sounds.saucerPlaying && !paused)
+                    sounds.saucerSound.loop();
+                if (sounds.thrustersPlaying && !paused)
+                    sounds.thrustersSound.loop();
             }
             sound = !sound;
         }
@@ -391,7 +434,7 @@ public class Game extends Applet implements Runnable, KeyListener {
 
         // 'S' key: start the game, if not already in progress.
 
-        if (c == 's' && loaded && !playing)
+        if (c == 's' && isLoaded() && !playing)
             initGame();
 
         // 'HOME' key: jump to web site (undocumented).
@@ -416,12 +459,19 @@ public class Game extends Applet implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_DOWN)
             down = false;
 
-        if (!up && !down && thrustersPlaying) {
-            thrustersSound.stop();
-            thrustersPlaying = false;
+        if (!up && !down && sounds.thrustersPlaying) {
+            sounds.thrustersSound.stop();
+            sounds.thrustersPlaying = false;
         }
     }
 
     public void keyTyped(KeyEvent e) {}
 
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
+    }
 }

@@ -18,7 +18,7 @@ public class Sound extends Game{
     AudioClip crashSound;
     AudioClip explosionSound;
     AudioClip fireSound;
-    AudioClip missleSound;
+    AudioClip missileSound;
     AudioClip saucerSound;
     AudioClip thrustersSound;
     AudioClip warpSound;
@@ -27,7 +27,7 @@ public class Sound extends Game{
 
     boolean thrustersPlaying;
     boolean saucerPlaying;
-    boolean misslePlaying;
+    boolean missilePlaying;
 
     // Counter and total used to track the loading of the sound clips.
 
@@ -46,7 +46,7 @@ public class Sound extends Game{
             clipTotal++;
             fireSound      = getAudioClip(new URL(getCodeBase(), "fire.au"));
             clipTotal++;
-            missleSound    = getAudioClip(new URL(getCodeBase(), "missle.au"));
+            missileSound    = getAudioClip(new URL(getCodeBase(), "missle.au"));
             clipTotal++;
             saucerSound    = getAudioClip(new URL(getCodeBase(), "saucer.au"));
             clipTotal++;
@@ -64,7 +64,7 @@ public class Sound extends Game{
             repaint(); Thread.currentThread().sleep(DELAY);
             fireSound.play();      fireSound.stop();      clipsLoaded++;
             repaint(); Thread.currentThread().sleep(DELAY);
-            missleSound.play();    missleSound.stop();    clipsLoaded++;
+            missileSound.play();    missileSound.stop();    clipsLoaded++;
             repaint(); Thread.currentThread().sleep(DELAY);
             saucerSound.play();    saucerSound.stop();    clipsLoaded++;
             repaint(); Thread.currentThread().sleep(DELAY);

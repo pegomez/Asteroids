@@ -1070,17 +1070,6 @@ public class Asteroids extends Applet implements Runnable, KeyListener {
             }
     }
 
-    public void initExplosions() {
-
-        int i;
-
-        for (i = 0; i < MAX_SCRAP; i++) {
-            explosions[i].shape = new Polygon();
-            explosions[i].active = false;
-            explosionCounter[i] = 0;
-        }
-        explosionIndex = 0;
-    }
 
     public void explode(AsteroidsSprite s) {
 
