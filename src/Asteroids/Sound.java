@@ -4,74 +4,69 @@ import java.applet.AudioClip;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static Asteroids.Game.DELAY;
+
 /**
  * Created by pedrogomezlopez on 18/3/17.
  */
 public class Sound extends Game{
 
-    // Explosion data.
-    int[] explosionCounter = new int[MAX_SCRAP];  // Time counters for explosions.
-    int   explosionIndex;                         // Next available explosion sprite.
-
     // Sound clips.
-
     AudioClip crashSound;
     AudioClip explosionSound;
     AudioClip fireSound;
-    AudioClip missleSound;
+    AudioClip missileSound;
     AudioClip saucerSound;
     AudioClip thrustersSound;
     AudioClip warpSound;
 
     // Flags for looping sound clips.
-
     boolean thrustersPlaying;
     boolean saucerPlaying;
-    boolean misslePlaying;
+    boolean missilePlaying;
 
     // Counter and total used to track the loading of the sound clips.
-
     int clipTotal   = 0;
     int clipsLoaded = 0;
 
-    public void loadSounds() {
+    public void loadSounds(Game g) {
 
         // Load all sound clips by playing and immediately stopping them. Update
         // counter and total for display.
 
         try {
-            crashSound     = getAudioClip(new URL(getCodeBase(), "crash.au"));
+            crashSound     = g.getAudioClip(new URL(g.getCodeBase(), "crash.au"));
             clipTotal++;
-            explosionSound = getAudioClip(new URL(getCodeBase(), "explosion.au"));
+            explosionSound = g.getAudioClip(new URL(g.getCodeBase(), "explosion.au"));
             clipTotal++;
-            fireSound      = getAudioClip(new URL(getCodeBase(), "fire.au"));
+            fireSound      = g.getAudioClip(new URL(g.getCodeBase(), "fire.au"));
             clipTotal++;
-            missleSound    = getAudioClip(new URL(getCodeBase(), "missle.au"));
+            missileSound    = g.getAudioClip(new URL(g.getCodeBase(), "missle.au"));
             clipTotal++;
-            saucerSound    = getAudioClip(new URL(getCodeBase(), "saucer.au"));
+            saucerSound    = g.getAudioClip(new URL(g.getCodeBase(), "saucer.au"));
             clipTotal++;
-            thrustersSound = getAudioClip(new URL(getCodeBase(), "thrusters.au"));
+            thrustersSound = g.getAudioClip(new URL(g.getCodeBase(), "thrusters.au"));
             clipTotal++;
-            warpSound      = getAudioClip(new URL(getCodeBase(), "warp.au"));
+            warpSound      = g.getAudioClip(new URL(g.getCodeBase(), "warp.au"));
             clipTotal++;
         }
-        catch (MalformedURLException e) {}
+        catch (MalformedURLException e) {e.getMessage();}
 
         try {
             crashSound.play();     crashSound.stop();     clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
+            g.repaint(); Thread.currentThread().sleep(DELAY);
             explosionSound.play(); explosionSound.stop(); clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
+            g.repaint(); Thread.currentThread().sleep(DELAY);
             fireSound.play();      fireSound.stop();      clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
-            missleSound.play();    missleSound.stop();    clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
+            g.repaint(); Thread.currentThread().sleep(DELAY);
+            missileSound.play();    missileSound.stop();    clipsLoaded++;
+            g.repaint(); Thread.currentThread().sleep(DELAY);
             saucerSound.play();    saucerSound.stop();    clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
+            g.repaint(); Thread.currentThread().sleep(DELAY);
             thrustersSound.play(); thrustersSound.stop(); clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
+            g.repaint(); Thread.currentThread().sleep(DELAY);
             warpSound.play();      warpSound.stop();      clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
+            g.repaint(); Thread.currentThread().sleep(DELAY);
         }
         catch (InterruptedException e) {}
     }

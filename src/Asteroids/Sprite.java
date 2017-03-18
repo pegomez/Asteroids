@@ -5,10 +5,11 @@ import java.awt.*;
 /**
  * Created by pedrogomezlopez on 18/3/17.
  */
+
 public class Sprite {
 
     // Fields:
-
+    public Game game;
     static int width;          // Dimensions of the graphics area.
     static int height;
 
@@ -26,7 +27,6 @@ public class Sprite {
     // Constructors:
 
     public Sprite() {
-
         this.shape = new Polygon();
         this.active = false;
         this.angle = 0.0;
@@ -36,6 +36,9 @@ public class Sprite {
         this.deltaX = 0.0;
         this.deltaY = 0.0;
         this.sprite = new Polygon();
+    }
+    public Sprite(Game game) {
+        this.game = game;
     }
 
     // Methods:
@@ -89,7 +92,7 @@ public class Sprite {
                     (int) Math.round(this.shape.ypoints[i] * Math.cos(this.angle) - this.shape.xpoints[i] * Math.sin(this.angle)) + (int) Math.round(this.y) + height / 2);
     }
 
-    public boolean isColliding(AsteroidsSprite s) {
+    public boolean isColliding(Sprite s) {
 
         int i;
 
