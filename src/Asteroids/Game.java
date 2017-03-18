@@ -32,7 +32,7 @@ public class Game extends Applet implements Runnable, KeyListener {
 
     static final int MAX_SHOTS = 8;          // Maximum number of sprites
     static final int MAX_ROCKS = 8;          // for photons, asteroids and
-    public static final int MAX_SCRAP = 40;          // explosions.
+    static final int MAX_SCRAP = 40;          // explosions.
 
     static final int SCRAP_COUNT = 2 * FPS;  // Timer counter starting values
     static final int HYPER_COUNT = 3 * FPS;  // calculated using number of
@@ -82,8 +82,7 @@ public class Game extends Applet implements Runnable, KeyListener {
 
     int score;
     int highScore;
-    int newShipScore;
-    int newUfoScore;
+
 
     // Flags for game state and options.
 
@@ -105,7 +104,7 @@ public class Game extends Applet implements Runnable, KeyListener {
     Ship ship;
     Thruster fwdThruster, revThruster;
     Ufo ufo;
-    Missle missle;
+    Missile missile;
     Photon[] photons = new Photon[MAX_SHOTS];
     Asteroid[] asteroids = new Asteroid[MAX_ROCKS];
     Explosion[] explosions = new Explosion[MAX_SCRAP];
@@ -160,11 +159,59 @@ public class Game extends Applet implements Runnable, KeyListener {
             stars[i] = new Point((int) (Math.random() * Sprite.width), (int) (Math.random() * Sprite.height));
 
         // Create shape for the ship sprite.
-
         ship = new Ship();
-        ship.shape.addPoint(0, -10);
-        ship.shape.addPoint(7, 10);
-        ship.shape.addPoint(-7, 10);
+
+        // Create shapes for the ship thrusters.
+        fwdThruster = new Thruster(true);
+        revThruster = new Thruster(false);
+
+        // Create shape for each photon sprites.
+        for (i = 0; i < MAX_SHOTS; i++) {
+            photons[i] = new Photon();
+        }
+
+        // Create shape for the flying saucer.
+        ufo = new Ufo();
+
+        // Create shape for the guided missle.
+        missile = new Missile();
+
+        // Create asteroid sprites.
+        for (i = 0; i < MAX_ROCKS; i++)
+            asteroids[i] = new Asteroid();
+
+        // Create explosion sprites.
+        for (i = 0; i < MAX_SCRAP; i++)
+            explosions[i] = new Explosion();
+
+        // Initialize game data and put us in 'game over' mode.
+        highScore = 0;
+        sound = true;
+        detail = true;
+        initGame();
+        endGame();
+    }
+
+    public void initGame() {
+
+        // Initialize game data and sprites.
+        score = 0;
+        ship.shipsLeft = MAX_SHIPS;
+        for (Asteroid asteroid : asteroids){
+            asteroid.asteroidsSpeed = MIN_ROCK_SPEED;
+        }
+        ship.newShipScore = NEW_SHIP_POINTS;
+        ufo.newUfoScore = NEW_UFO_POINTS;
+
+        initShip();
+        initPhotons();
+        stopUfo();
+        stopMissle();
+        initAsteroids();
+        initExplosions();
+        playing = true;
+        paused = false;
+        photonTime = System.currentTimeMillis();
     }
 
     public void run() {
@@ -254,10 +301,10 @@ public class Game extends Applet implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_DOWN)
             down = true;
 
-        if ((up || down) && ship.active && !thrustersPlaying) {
+        if ((up || down) && ship.active && !sounds.thrustersPlaying) {
             if (sound && !paused)
-                thrustersSound.loop();
-            thrustersPlaying = true;
+                sounds.thrustersSound.loop();
+            sounds.thrustersPlaying = true;
         }
 
         // Spacebar: fire a photon and start its counter.

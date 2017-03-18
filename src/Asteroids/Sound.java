@@ -4,16 +4,15 @@ import java.applet.AudioClip;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static Asteroids.Game.MAX_SCRAP;
-
 /**
  * Created by pedrogomezlopez on 18/3/17.
  */
 public class Sound extends Game{
-    // Explosion data.
 
+    // Explosion data.
     int[] explosionCounter = new int[MAX_SCRAP];  // Time counters for explosions.
     int   explosionIndex;                         // Next available explosion sprite.
+
     // Sound clips.
 
     AudioClip crashSound;

@@ -437,7 +437,6 @@ public class Asteroids extends Applet implements Runnable, KeyListener {
     public void initGame() {
 
         // Initialize game data and sprites.
-
         score = 0;
         shipsLeft = MAX_SHIPS;
         asteroidsSpeed = MIN_ROCK_SPEED;
