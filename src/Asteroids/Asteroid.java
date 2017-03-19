@@ -139,7 +139,7 @@ public class Asteroid extends SpaceElement {
                         a[i].active = false;
                         p[j].active = false;
                         if (Game.sound)
-                            Game.explosionSound.play();
+                            Game.sounds.explosionSound.play();
                         Game.explode(a[i]);
                         if (!aS[i]) {
                             Game.score += Game.BIG_POINTS;
@@ -154,7 +154,7 @@ public class Asteroid extends SpaceElement {
                 if (s.active && Game.hyperCounter <= 0 &&
                         a[i].active && a[i].isColliding(s)) {
                     if (Game.sound)
-                        Game.crashSound.play();
+                        Game.sounds.crashSound.play();
                     Game.explode(s);
                     Ship.stopShip(s);
                     Ufo.stopUfo(u);

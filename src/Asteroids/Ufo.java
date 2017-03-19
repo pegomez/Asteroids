@@ -45,9 +45,9 @@ public class Ufo extends SpaceElement {
             ufo.deltaY = ufo.deltaY;
         ufo.render();
 
-        Game.saucerPlaying = true;
+        Game.sounds.saucerPlaying = true;
         if (Game.sound)
-            Game.saucerSound.loop();
+            Game.sounds.saucerSound.loop();
 
         ufoCounter = (int) Math.abs(SpaceElement.width / ufo.deltaX);
     }
@@ -73,7 +73,7 @@ public class Ufo extends SpaceElement {
                 for (i = 0; i < Game.MAX_SHOTS; i++)
                     if (photons[i].active && ufo.isColliding(photons[i])) {
                         if (Game.sound)
-                            Game.crashSound.play();
+                            Game.sounds.crashSound.play();
 
                         Game.explode(ufo);
                         stopUfo(ufo);
@@ -96,8 +96,8 @@ public class Ufo extends SpaceElement {
     public static void stopUfo(Ufo ufo) {
         ufo.active = false;
         if (Game.loaded)
-            Game.saucerSound.stop();
-        Game.saucerPlaying = false;
+            Game.sounds.saucerSound.stop();
+        Game.sounds.saucerPlaying = false;
         Game.ufoCounter = 0;
         Game.ufoPassesLeft = 0;
     }

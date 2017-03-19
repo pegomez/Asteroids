@@ -129,23 +129,13 @@ public class Game extends Applet implements Runnable, KeyListener {
     static int newShipScore;
 
 
-    // Flags for looping sound clips.
-    static boolean thrustersPlaying;
-    static boolean saucerPlaying;
-    static boolean missilePlaying;
-
-    // Sound clips.
-    static AudioClip crashSound;
-    static AudioClip explosionSound;
-    static AudioClip fireSound;
-    static AudioClip missileSound;
-    static AudioClip saucerSound;
-    static AudioClip thrustersSound;
-    static AudioClip warpSound;
+    // Sound object
+    public static Sound sounds = new Sound();
 
     // Counter and total used to track the loading of the sound clips.
-    int clipTotal  = 0;
-    int clipsLoaded = 0;
+    public static int clipTotal  = 0;
+    public static int clipsLoaded = 0;
+
 
     public String getAppletInfo() {
 
@@ -275,7 +265,7 @@ public class Game extends Applet implements Runnable, KeyListener {
 
         // Run thread for loading sounds.
         if (!loaded && Thread.currentThread() == loadThread) {
-            loadSounds();
+            sounds.loadSounds(this);
             loaded = true;
             loadThread.stop();
         }
@@ -350,17 +340,17 @@ public class Game extends Applet implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_DOWN)
             down = true;
 
-        if ((up || down) && ship.active && !thrustersPlaying) {
+        if ((up || down) && ship.active && !sounds.thrustersPlaying) {
             if (sound && !paused)
-                thrustersSound.loop();
-            thrustersPlaying = true;
+                sounds.thrustersSound.loop();
+            sounds.thrustersPlaying = true;
         }
 
         // Spacebar: fire a photon and start its counter.
 
         if (e.getKeyChar() == ' ' && ship.active) {
             if (sound & !paused)
-                fireSound.play();
+                sounds.fireSound.play();
             photonTime = System.currentTimeMillis();
             photonIndex++;
             if (photonIndex >= MAX_SHOTS)
@@ -384,7 +374,7 @@ public class Game extends Applet implements Runnable, KeyListener {
             ship.y = Math.random() * SpaceElement.height;
             hyperCounter = HYPER_COUNT;
             if (sound & !paused)
-                warpSound.play();
+                sounds.warpSound.play();
         }
 
         // 'P' key: toggle pause mode and start or stop any active looping sound
@@ -392,20 +382,20 @@ public class Game extends Applet implements Runnable, KeyListener {
 
         if (c == 'p') {
             if (paused) {
-                if (sound && missilePlaying)
-                    missileSound.loop();
-                if (sound && saucerPlaying)
-                    saucerSound.loop();
-                if (sound && thrustersPlaying)
-                    thrustersSound.loop();
+                if (sound && sounds.missilePlaying)
+                    sounds.missileSound.loop();
+                if (sound && sounds.saucerPlaying)
+                    sounds.saucerSound.loop();
+                if (sound && sounds.thrustersPlaying)
+                    sounds.thrustersSound.loop();
             }
             else {
-                if (missilePlaying)
-                    missileSound.stop();
-                if (saucerPlaying)
-                    saucerSound.stop();
-                if (thrustersPlaying)
-                    thrustersSound.stop();
+                if (sounds.missilePlaying)
+                    sounds.missileSound.stop();
+                if (sounds.saucerPlaying)
+                    sounds.saucerSound.stop();
+                if (sounds.thrustersPlaying)
+                    sounds.thrustersSound.stop();
             }
             paused = !paused;
         }
@@ -414,21 +404,21 @@ public class Game extends Applet implements Runnable, KeyListener {
 
         if (c == 'm' && loaded) {
             if (sound) {
-                crashSound.stop();
-                explosionSound.stop();
-                fireSound.stop();
-                missileSound.stop();
-                saucerSound.stop();
-                thrustersSound.stop();
-                warpSound.stop();
+                sounds.crashSound.stop();
+                sounds.explosionSound.stop();
+                sounds.fireSound.stop();
+                sounds.missileSound.stop();
+                sounds.saucerSound.stop();
+                sounds.thrustersSound.stop();
+                sounds.warpSound.stop();
             }
             else {
-                if (missilePlaying && !paused)
-                    missileSound.loop();
-                if (saucerPlaying && !paused)
-                    saucerSound.loop();
-                if (thrustersPlaying && !paused)
-                    thrustersSound.loop();
+                if (sounds.missilePlaying && !paused)
+                    sounds.missileSound.loop();
+                if (sounds.saucerPlaying && !paused)
+                    sounds.saucerSound.loop();
+                if (sounds.thrustersPlaying && !paused)
+                    sounds.thrustersSound.loop();
             }
             sound = !sound;
         }
@@ -465,9 +455,9 @@ public class Game extends Applet implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_DOWN)
             down = false;
 
-        if (!up && !down && thrustersPlaying) {
-            thrustersSound.stop();
-            thrustersPlaying = false;
+        if (!up && !down && sounds.thrustersPlaying) {
+            sounds.thrustersSound.stop();
+            sounds.thrustersPlaying = false;
         }
     }
 
@@ -683,48 +673,6 @@ public class Game extends Applet implements Runnable, KeyListener {
         // Copy the off screen buffer to the screen.
 
         g.drawImage(offImage, 0, 0, this);
-    }
-
-    public void loadSounds() {
-
-        // Load all sound clips by playing and immediately stopping them. Update
-        // counter and total for display.
-
-        try {
-            crashSound     = getAudioClip(new URL(getCodeBase(), "crash.au"));
-            clipTotal++;
-            explosionSound = getAudioClip(new URL(getCodeBase(), "explosion.au"));
-            clipTotal++;
-            fireSound      = getAudioClip(new URL(getCodeBase(), "fire.au"));
-            clipTotal++;
-            missileSound    = getAudioClip(new URL(getCodeBase(), "missle.au"));
-            clipTotal++;
-            saucerSound    = getAudioClip(new URL(getCodeBase(), "saucer.au"));
-            clipTotal++;
-            thrustersSound = getAudioClip(new URL(getCodeBase(), "thrusters.au"));
-            clipTotal++;
-            warpSound      = getAudioClip(new URL(getCodeBase(), "warp.au"));
-            clipTotal++;
-        }
-        catch (MalformedURLException e) {e.getMessage();}
-
-        try {
-            crashSound.play();     crashSound.stop();     clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
-            explosionSound.play(); explosionSound.stop(); clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
-            fireSound.play();      fireSound.stop();      clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
-            missileSound.play();    missileSound.stop();    clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
-            saucerSound.play();    saucerSound.stop();    clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
-            thrustersSound.play(); thrustersSound.stop(); clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
-            warpSound.play();      warpSound.stop();      clipsLoaded++;
-            repaint(); Thread.currentThread().sleep(DELAY);
-        }
-        catch (InterruptedException e) {}
     }
 
 }

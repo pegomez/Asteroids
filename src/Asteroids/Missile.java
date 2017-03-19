@@ -36,8 +36,8 @@ public class Missile extends SpaceElement {
         m.render();
         Game.missileCounter = MISSLE_COUNT;
         if (Game.sound)
-            Game.missileSound.loop();
-        Game.missilePlaying = true;
+            Game.sounds.missileSound.loop();
+        Game.sounds.missilePlaying = true;
     }
 
     public static void updateMissile (Missile m, Photon[] p, Ship s, Ufo u) {
@@ -55,7 +55,7 @@ public class Missile extends SpaceElement {
                 for (int i = 0; i < Game.MAX_SHOTS; i++)
                     if (p[i].active && m.isColliding(p[i])) {
                         if (Game.sound)
-                            Game.crashSound.play();
+                            Game.sounds.crashSound.play();
                         Game.explode(m);
                         stopMissile(m);
                         Game.score += Game.MISSLE_POINTS;
@@ -63,7 +63,7 @@ public class Missile extends SpaceElement {
                 if (m.active && s.active &&
                         Game.hyperCounter <= 0 && s.isColliding(m)) {
                     if (Game.sound)
-                        Game.crashSound.play();
+                        Game.sounds.crashSound.play();
                     Game.explode(s);
                     Ship.stopShip(s);
                     Ufo.stopUfo(u);
@@ -114,8 +114,8 @@ public class Missile extends SpaceElement {
 
         m.active = false;
         if (Game.loaded)
-            Game.missileSound.stop();
-        Game.missilePlaying = false;
+            Game.sounds.missileSound.stop();
+        Game.sounds.missilePlaying = false;
         Game.missileCounter = 0;
     }
 }

@@ -46,8 +46,8 @@ public class Ship extends SpaceElement {
         ship.thrusters[1].render();
 
         if (Game.loaded)
-            Game.thrustersSound.stop();
-        Game.thrustersPlaying = false;
+            Game.sounds.thrustersSound.stop();
+        Game.sounds.thrustersPlaying = false;
         Game.hyperCounter = 0;
     }
 
@@ -144,8 +144,8 @@ public class Ship extends SpaceElement {
         if (Game.shipsLeft > 0)
             Game.shipsLeft--;
         if (Game.loaded)
-            Game.thrustersSound.stop();
-        Game.thrustersPlaying = false;
+            Game.sounds.thrustersSound.stop();
+        Game.sounds.thrustersPlaying = false;
     }
 
 }
