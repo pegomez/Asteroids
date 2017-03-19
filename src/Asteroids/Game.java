@@ -285,7 +285,6 @@ public class Game extends Applet implements Runnable {
                 Photon.updatePhotons(photons);
                 Ufo.updateUfo(ufo, photons, ship, missile);
                 Missile.updateMissile(missile, photons, ship, ufo);
-                Asteroid.initAsteroids(asteroids, asteroidIsSmall);
                 Asteroid.updateAsteroids(asteroids, photons, asteroidIsSmall, ship, missile, ufo);
                 Explosion.updateExplosions(explosions, explosionCounter);
 
