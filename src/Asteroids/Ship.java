@@ -2,10 +2,6 @@ package Asteroids;
 
 import static Asteroids.Game.*;
 
-/**
- * Created by pedrogomezlopez on 18/3/17.
- */
-
 public class Ship extends SpaceElement {
 
     // Ship data.

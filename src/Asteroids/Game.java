@@ -8,10 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-/**
- * Created by pedrogomezlopez on 18/3/17.
- */
-
 public class Game extends Applet implements Runnable {
 
     // Copyright information.

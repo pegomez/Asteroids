@@ -4,9 +4,6 @@ import java.applet.AudioClip;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-/**
- * Created by administrador on 19/3/17.
- */
 public class Sound extends Game {
 
     // Flags for looping sound clips.

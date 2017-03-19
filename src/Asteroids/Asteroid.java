@@ -10,9 +10,6 @@ import Asteroids.Game.*;
 
 import static Asteroids.Game.*;
 
-/**
- * Created by pedrogomezlopez on 18/3/17.
- */
 public class Asteroid extends SpaceElement {
 
     public static void initAsteroids(Asteroid[] as, boolean[] aSmall) {

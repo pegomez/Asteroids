@@ -4,9 +4,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
 
-/**
- * Created by administrador on 19/3/17.
- */
 public class Keyboard extends Game implements KeyListener {
 
     public void keyPressed(KeyEvent e) {
