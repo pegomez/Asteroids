@@ -149,6 +149,7 @@ public class Game extends Applet implements Runnable {
 
         // Display copyright information.
         System.out.println(copyText);
+        System.out.println(thanks);
 
         // Set up key event handling and set focus to applet window.
         addKeyListener(controls);
