@@ -6,116 +6,120 @@ import static Asteroids.Game.*;
  * Created by pedrogomezlopez on 18/3/17.
  */
 
-public class Ship extends Sprite {
+public class Ship extends SpaceElement {
 
     // Ship data.
-    int newShipScore;
+
     Thruster[] thrusters = new Thruster[2];
 
-    public Ship()
+    public static void setShip(Ship ship)
     {
-        this.shape.addPoint(0, -10);
-        this.shape.addPoint(7, 10);
-        this.shape.addPoint(-7, 10);
+        ship.shape.addPoint(0, -10);
+        ship.shape.addPoint(7, 10);
+        ship.shape.addPoint(-7, 10);
 
         // Create shapes for the ship thrusters.
-        this.thrusters[0] = new Thruster(true);
-        this.thrusters[1] = new Thruster(false);
-
+        ship.thrusters[0] = new Thruster(true);
+        ship.thrusters[1] = new Thruster(false);
     }
 
-    public void initShip(Game g) {
+    public static void initShip(Ship ship) {
 
         // Reset the ship sprite at the center of the screen.
-        this.active = true;
-        this.angle = 0.0;
-        this.deltaAngle = 0.0;
-        this.x = 0.0;
-        this.y = 0.0;
-        this.deltaX = 0.0;
-        this.deltaY = 0.0;
-        this.render();
+        ship.active = true;
+        ship.angle = 0.0;
+        ship.deltaAngle = 0.0;
+        ship.x = 0.0;
+        ship.y = 0.0;
+        ship.deltaX = 0.0;
+        ship.deltaY = 0.0;
+        ship.render();
 
         // Initialize thruster sprites.
-        this.thrusters[0].x = this.x;
-        this.thrusters[0].y = this.y;
-        this.thrusters[0].angle = this.angle;
-        this.thrusters[0].render();
-        this.thrusters[1].x = this.x;
-        this.thrusters[1].y = this.y;
-        this.thrusters[1].angle = this.angle;
-        this.thrusters[1].render();
+        ship.thrusters[0].x = ship.x;
+        ship.thrusters[0].y = ship.y;
+        ship.thrusters[0].angle = ship.angle;
+        ship.thrusters[0].render();
+        ship.thrusters[1].x = ship.x;
+        ship.thrusters[1].y = ship.y;
+        ship.thrusters[1].angle = ship.angle;
+        ship.thrusters[1].render();
 
-        if (g.sound)
-            g.sounds.thrustersSound.stop();
-        g.sounds.thrustersPlaying = false;
-        g.hyperCounter = 0;
+        if (Game.loaded)
+            Game.thrustersSound.stop();
+        Game.thrustersPlaying = false;
+        Game.hyperCounter = 0;
     }
 
-    public void updateShip(Game g) {
+    public static void updateShip(Ship ship, boolean left, boolean right, boolean down, boolean up) {
 
         double dx, dy, speed;
 
-        if(!g.playing)
+        if (!Game.playing)
             return;
 
         // Rotate the ship if left or right cursor key is down.
-        if (g.left) {
-            this.angle += SHIP_ANGLE_STEP;
-            if (this.angle > 2 * Math.PI)
-                this.angle -= 2 * Math.PI;
+
+        if (left) {
+            ship.angle += Game.SHIP_ANGLE_STEP;
+            if (ship.angle > 2 * Math.PI)
+                ship.angle -= 2 * Math.PI;
         }
-        if (g.right) {
-            this.angle -= SHIP_ANGLE_STEP;
-            if (this.angle < 0)
-                this.angle += 2 * Math.PI;
+        if (right) {
+            ship.angle -= Game.SHIP_ANGLE_STEP;
+            if (ship.angle < 0)
+                ship.angle += 2 * Math.PI;
         }
 
         // Fire thrusters if up or down cursor key is down.
-        dx = SHIP_SPEED_STEP * -Math.sin(this.angle);
-        dy = SHIP_SPEED_STEP *  Math.cos(this.angle);
-        if (g.up) {
-            this.deltaX += dx;
-            this.deltaY += dy;
+
+        dx = Game.SHIP_SPEED_STEP * -Math.sin(ship.angle);
+        dy = Game.SHIP_SPEED_STEP *  Math.cos(ship.angle);
+        if (up) {
+            ship.deltaX += dx;
+            ship.deltaY += dy;
         }
-        if (g.down) {
-            this.deltaX -= dx;
-            this.deltaY -= dy;
+        if (down) {
+            ship.deltaX -= dx;
+            ship.deltaY -= dy;
         }
 
         // Don't let ship go past the speed limit.
-        if (g.up || g.down) {
-            speed = Math.sqrt(this.deltaX * this.deltaX + this.deltaY * this.deltaY);
-            if (speed > MAX_SHIP_SPEED) {
-                dx = MAX_SHIP_SPEED * -Math.sin(this.angle);
-                dy = MAX_SHIP_SPEED *  Math.cos(this.angle);
-                if (game.up)
-                    this.deltaX = dx;
+
+        if (up || down) {
+            speed = Math.sqrt(ship.deltaX * ship.deltaX + ship.deltaY * ship.deltaY);
+            if (speed > Game.MAX_SHIP_SPEED) {
+                dx = Game.MAX_SHIP_SPEED * -Math.sin(ship.angle);
+                dy = Game.MAX_SHIP_SPEED *  Math.cos(ship.angle);
+                if (up)
+                    ship.deltaX = dx;
                 else
-                    this.deltaX = -dx;
-                if (g.up)
-                    this.deltaY = dy;
+                    ship.deltaX = -dx;
+                if (up)
+                    ship.deltaY = dy;
                 else
-                    this.deltaY = -dy;
+                    ship.deltaY = -dy;
             }
         }
 
         // Move the ship. If it is currently in hyperspace, advance the countdown.
-        if (this.active) {
-            this.advance();
-            this.render();
-            if (g.hyperCounter > 0)
-                g.hyperCounter--;
+
+        if (ship.active) {
+            ship.advance();
+            ship.render();
+            if (Game.hyperCounter > 0)
+                Game.hyperCounter--;
 
             // Update the thruster sprites to match the ship sprite.
-            this.thrusters[0].x = this.x;
-            this.thrusters[0].y = this.y;
-            this.thrusters[0].angle = this.angle;
-            this.thrusters[0].render();
-            this.thrusters[1].x = this.x;
-            this.thrusters[1].y = this.y;
-            this.thrusters[1].angle = this.angle;
-            this.thrusters[1].render();
+
+            ship.thrusters[0].x = ship.x;
+            ship.thrusters[0].y = ship.y;
+            ship.thrusters[0].angle = ship.angle;
+            ship.thrusters[0].render();
+            ship.thrusters[1].x = ship.x;
+            ship.thrusters[1].y = ship.y;
+            ship.thrusters[1].angle = ship.angle;
+            ship.thrusters[1].render();
         }
 
         // Ship is exploding, advance the countdown or create a new ship if it is
@@ -124,25 +128,24 @@ public class Ship extends Sprite {
         // danger.) If that was the last ship, end the game.
 
         else
-        if (--g.shipCounter <= 0)
-            if (g.shipsLeft > 0)
-            {
-                initShip(g);
-                g.hyperCounter = HYPER_COUNT;
+        if (--Game.shipCounter <= 0)
+            if (Game.shipsLeft > 0) {
+                Ship.initShip(ship);
+                Game.hyperCounter = Game.HYPER_COUNT;
             }
-            else
-                g.endGame();
+        else
+        Game.endGame();
     }
 
-    public void stopShip(Game g) {
+    public static void stopShip(Ship s) {
 
-        this.active = false;
-        g.shipCounter = SCRAP_COUNT;
-        if (g.shipsLeft > 0)
-            g.shipsLeft--;
-        if (g.loaded)
-            g.sounds.thrustersSound.stop();
-        g.sounds.thrustersPlaying = false;
+        s.active = false;
+        Game.shipCounter = SCRAP_COUNT;
+        if (Game.shipsLeft > 0)
+            Game.shipsLeft--;
+        if (Game.loaded)
+            Game.thrustersSound.stop();
+        Game.thrustersPlaying = false;
     }
 
 }

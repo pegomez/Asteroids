@@ -6,10 +6,9 @@ import java.awt.*;
  * Created by pedrogomezlopez on 18/3/17.
  */
 
-public class Sprite {
+public class SpaceElement {
 
     // Fields:
-    public Game game;
     static int width;          // Dimensions of the graphics area.
     static int height;
 
@@ -20,13 +19,14 @@ public class Sprite {
     double  x, y;              // Current position on screen.
     double  deltaX, deltaY;    // Amount to change the screen position.
     Polygon sprite;            // Final location and shape of sprite after
+    Thruster[] thrusters = new Thruster[2];
     // applying rotation and translation to get screen
     // position. Used for drawing on the screen and in
     // detecting collisions.
 
     // Constructors:
 
-    public Sprite() {
+    public SpaceElement() {
         this.shape = new Polygon();
         this.active = false;
         this.angle = 0.0;
@@ -37,12 +37,8 @@ public class Sprite {
         this.deltaY = 0.0;
         this.sprite = new Polygon();
     }
-    public Sprite(Game game) {
-        this.game = game;
-    }
 
     // Methods:
-
     public boolean advance() {
 
         boolean wrapped;
@@ -92,7 +88,7 @@ public class Sprite {
                     (int) Math.round(this.shape.ypoints[i] * Math.cos(this.angle) - this.shape.xpoints[i] * Math.sin(this.angle)) + (int) Math.round(this.y) + height / 2);
     }
 
-    public boolean isColliding(Sprite s) {
+    public boolean isColliding(SpaceElement s) {
 
         int i;
 

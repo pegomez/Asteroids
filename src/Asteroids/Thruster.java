@@ -1,5 +1,7 @@
 package Asteroids;
 
+import sun.jvm.hotspot.memory.Space;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.net.*;
@@ -10,7 +12,7 @@ import java.applet.AudioClip;
 /**
  * Created by pedrogomezlopez on 18/3/17.
  */
-public class Thruster extends Sprite
+public class Thruster extends SpaceElement
 {
 
     public Thruster(boolean option)

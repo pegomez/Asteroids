@@ -6,29 +6,33 @@ import static Asteroids.Game.MAX_SHOTS;
  * Created by pedrogomezlopez on 18/3/17.
  */
 
-public class Photon extends Sprite {
+public class Photon extends SpaceElement {
 
 
-    public Photon() {
-        this.shape.addPoint(1, 1);
-        this.shape.addPoint(1, -1);
-        this.shape.addPoint(-1, 1);
-        this.shape.addPoint(-1, -1);
+    public static void setPhoton(Photon photon) {
+        photon.shape.addPoint(1, 1);
+        photon.shape.addPoint(1, -1);
+        photon.shape.addPoint(-1, 1);
+        photon.shape.addPoint(-1, -1);
     }
 
-    public void initPhoton() {
-        this.active = false;
+    public static void initPhotons(Photon[] photons) {
+        int i;
+        for (i = 0; i < Game.MAX_SHOTS; i++)
+            photons[i].active = false;
+            Game.photonIndex = 0;
     }
 
-    public void updatePhoton() {
+    public static void updatePhotons(Photon[] p) {
 
         // Move any active photons. Stop it when its counter has expired.
-        if (this.active) {
-            if (!this.advance())
-                this.render();
-            else
-                this.active = false;
-        }
+        for (int i = 0; i < Game.MAX_SHOTS; i++)
+            if (p[i].active) {
+                if (!p[i].advance())
+                    p[i].render();
+                else
+                    p[i].active = false;
+            }
     }
 
 }

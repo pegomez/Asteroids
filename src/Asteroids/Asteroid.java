@@ -13,71 +13,68 @@ import static Asteroids.Game.*;
 /**
  * Created by pedrogomezlopez on 18/3/17.
  */
-public class Asteroid extends Sprite{
-    // Asteroid data.
+public class Asteroid extends SpaceElement {
 
-    //boolean[] asteroidIsSmall = new boolean[MAX_ROCKS];    // Asteroid size flag.
-    boolean   asteroidIsSmall = false;      // Asteroid size flag.
-    double    asteroidsSpeed;               // Asteroid speed.
-
-    public Asteroid(){
-
-    }
-
-    public void initAsteroid() {
-
+    public static void initAsteroids(Asteroid[] as, boolean[] aSmall) {
         int i, j;
         int s;
         double theta, r;
         int x, y;
 
+        // Create random shapes, positions and movements for each asteroid.
+
+        for (i = 0; i < Game.MAX_ROCKS; i++) {
+
             // Create a jagged shape for the asteroid and give it a random rotation.
 
-            this.shape = new Polygon();
-            s = MIN_ROCK_SIDES + (int) (Math.random() * (MAX_ROCK_SIDES - MIN_ROCK_SIDES));
+            as[i].shape = new Polygon();
+            s = Game.MIN_ROCK_SIDES + (int) (Math.random() * (Game.MAX_ROCK_SIDES - Game.MIN_ROCK_SIDES));
             for (j = 0; j < s; j ++) {
                 theta = 2 * Math.PI / s * j;
-                r = MIN_ROCK_SIZE + (int) (Math.random() * (MAX_ROCK_SIZE - MIN_ROCK_SIZE));
+                r = Game.MIN_ROCK_SIZE + (int) (Math.random() * (Game.MAX_ROCK_SIZE - Game.MIN_ROCK_SIZE));
                 x = (int) -Math.round(r * Math.sin(theta));
                 y = (int)  Math.round(r * Math.cos(theta));
-                this.shape.addPoint(x, y);
+                as[i].shape.addPoint(x, y);
             }
-            this.active = true;
-            this.angle = 0.0;
-            this.deltaAngle = Math.random() * 2 * MAX_ROCK_SPIN - MAX_ROCK_SPIN;
+            as[i].active = true;
+            as[i].angle = 0.0;
+            as[i].deltaAngle = Math.random() * 2 * Game.MAX_ROCK_SPIN - Game.MAX_ROCK_SPIN;
 
             // Place the asteroid at one edge of the screen.
 
             if (Math.random() < 0.5) {
-                this.x = -Sprite.width / 2;
+                as[i].x = -SpaceElement.width / 2;
                 if (Math.random() < 0.5)
-                    this.x = Sprite.width / 2;
-                this.y = Math.random() * Sprite.height;
+                    as[i].x = SpaceElement.width / 2;
+                as[i].y = Math.random() * SpaceElement.height;
             }
             else {
-                this.x = Math.random() * Sprite.width;
-                this.y = -Sprite.height / 2;
+                as[i].x = Math.random() * SpaceElement.width;
+                as[i].y = -SpaceElement.height / 2;
                 if (Math.random() < 0.5)
-                    this.y = Sprite.height / 2;
+                    as[i].y = SpaceElement.height / 2;
             }
 
             // Set a random motion for the asteroid.
 
-        this.deltaX = Math.random() * asteroidsSpeed;
+            as[i].deltaX = Math.random() * Game.asteroidsSpeed;
             if (Math.random() < 0.5)
-                this.deltaX = -this.deltaX;
-        this.deltaY = Math.random() * asteroidsSpeed;
+                as[i].deltaX = -as[i].deltaX;
+            as[i].deltaY = Math.random() * Game.asteroidsSpeed;
             if (Math.random() < 0.5)
-                this.deltaY = -this.deltaY;
+                as[i].deltaY = -as[i].deltaY;
 
-        this.render();
-            this.asteroidIsSmall = false;
+            as[i].render();
+            asteroidIsSmall[i] = false;
+        }
 
-        if (asteroidsSpeed < MAX_ROCK_SPEED)
-            asteroidsSpeed += 0.5;
+        Game.asteroidsCounter = Game.STORM_PAUSE;
+        Game.asteroidsLeft = Game.MAX_ROCKS;
+        if (Game.asteroidsSpeed < Game.MAX_ROCK_SPEED)
+            Game.asteroidsSpeed += 0.5;
     }
 
-    public void initSmallAsteroids(Game g) {
+    public static void initSmallAsteroids(int n, Asteroid[] a, boolean[] aS) {
 
         int count;
         int i, j;
@@ -93,71 +90,75 @@ public class Asteroid extends Sprite{
 
         count = 0;
         i = 0;
-        tempX = this.x;
-        tempY = this.y;
+        tempX = a[n].x;
+        tempY = a[n].y;
         do {
-            if (!g.asteroids[i].active) {
-                g.asteroids[i].shape = new Polygon();
-                s = MIN_ROCK_SIDES + (int) (Math.random() * (MAX_ROCK_SIDES - MIN_ROCK_SIDES));
+            if (!a[i].active) {
+                a[i].shape = new Polygon();
+                s = Game.MIN_ROCK_SIDES + (int) (Math.random() * (Game.MAX_ROCK_SIDES - Game.MIN_ROCK_SIDES));
                 for (j = 0; j < s; j ++) {
                     theta = 2 * Math.PI / s * j;
-                    r = (MIN_ROCK_SIZE + (int) (Math.random() * (MAX_ROCK_SIZE - MIN_ROCK_SIZE))) / 2;
+                    r = (Game.MIN_ROCK_SIZE + (int) (Math.random() * (Game.MAX_ROCK_SIZE - Game.MIN_ROCK_SIZE))) / 2;
                     x = (int) -Math.round(r * Math.sin(theta));
                     y = (int)  Math.round(r * Math.cos(theta));
-                    g.asteroids[i].shape.addPoint(x, y);
+                    a[i].shape.addPoint(x, y);
                 }
-                g.asteroids[i].active = true;
-                g.asteroids[i].angle = 0.0;
-                g.asteroids[i].deltaAngle = Math.random() * 2 * MAX_ROCK_SPIN - MAX_ROCK_SPIN;
-                g.asteroids[i].x = tempX;
-                g.asteroids[i].y = tempY;
-                g.asteroids[i].deltaX = Math.random() * 2 * asteroidsSpeed - asteroidsSpeed;
-                g.asteroids[i].deltaY = Math.random() * 2 * asteroidsSpeed - asteroidsSpeed;
-                g.asteroids[i].render();
-                g.asteroids[i].asteroidIsSmall = true;
+                a[i].active = true;
+                a[i].angle = 0.0;
+                a[i].deltaAngle = Math.random() * 2 * Game.MAX_ROCK_SPIN - Game.MAX_ROCK_SPIN;
+                a[i].x = tempX;
+                a[i].y = tempY;
+                a[i].deltaX = Math.random() * 2 * Game.asteroidsSpeed - Game.asteroidsSpeed;
+                a[i].deltaY = Math.random() * 2 * Game.asteroidsSpeed - Game.asteroidsSpeed;
+                a[i].render();
+                aS[i] = true;
                 count++;
-                g.asteroidsLeft++;
+                Game.asteroidsLeft++;
             }
             i++;
-        } while (i < MAX_ROCKS && count < 2);
+        } while (i < Game.MAX_ROCKS && count < 2);
     }
 
-    public void updateAsteroids(Game g) {
+    public static void updateAsteroids(Asteroid[] a, Photon[] p, boolean[] aS, Ship s, Missile m, Ufo u) {
 
-        int j;
+        int i, j;
+
         // Move any active asteroids and check for collisions.
-            if (this.active) {
-                this.advance();
-                this.render();
+
+        for (i = 0; i < Game.MAX_ROCKS; i++)
+            if (a[i].active) {
+                a[i].advance();
+                a[i].render();
 
                 // If hit by photon, kill asteroid and advance score. If asteroid is
                 // large, make some smaller ones to replace it.
 
-                for (j = 0; j < MAX_SHOTS; j++)
-                    if (g.photons[j].active && this.active && this.isColliding(g.photons[j])) {
-                        g.asteroidsLeft--;
-                        this.active = false;
-                        g.photons[j].active = false;
-                        if (g.sound)
-                            g.sounds.explosionSound.play();
-                        g.explode(this);
-                        if (!this.asteroidIsSmall) {
-                            g.score += BIG_POINTS;
-                            initSmallAsteroids(g);
+                for (j = 0; j < Game.MAX_SHOTS; j++)
+                    if (p[j].active && a[i].active && a[i].isColliding(p[j])) {
+                        Game.asteroidsLeft--;
+                        a[i].active = false;
+                        p[j].active = false;
+                        if (Game.sound)
+                            Game.explosionSound.play();
+                        Game.explode(a[i]);
+                        if (!aS[i]) {
+                            Game.score += Game.BIG_POINTS;
+                            Asteroid.initSmallAsteroids(i, a, aS);
                         }
                         else
-                            g.score += SMALL_POINTS;
+                            Game.score += Game.SMALL_POINTS;
                     }
 
                 // If the ship is not in hyperspace, see if it is hit.
-                if (g.ship.active && g.hyperCounter <= 0 &&
-                        this.active && this.isColliding(g.ship)) {
-                    if (g.sound)
-                        g.sounds.crashSound.play();
-                    g.explode(g.ship);
-                    g.ship.stopShip(g);
-                    g.ufo.stopUfo(g);
-                    g.missile.stopMissile(g);
+
+                if (s.active && Game.hyperCounter <= 0 &&
+                        a[i].active && a[i].isColliding(s)) {
+                    if (Game.sound)
+                        Game.crashSound.play();
+                    Game.explode(s);
+                    Ship.stopShip(s);
+                    Ufo.stopUfo(u);
+                    Missile.stopMissile(m);
                 }
             }
     }

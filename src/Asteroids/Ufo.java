@@ -1,106 +1,104 @@
 package Asteroids;
 
+import sun.jvm.hotspot.memory.Space;
+
 import static Asteroids.Game.*;
 
 /**
  * Created by pedrogomezlopez on 18/3/17.
  */
 
-public class Ufo extends Sprite {
+public class Ufo extends SpaceElement {
 
-    // Flying saucer data.
-    int ufoPassesLeft;    // Counter for number of flying saucer passes.
-    int ufoCounter;       // Timer counter used to track each flying saucer pass.
-    int newUfoScore;
 
-    public Ufo(){
-        this.shape.addPoint(-15, 0);
-        this.shape.addPoint(-10, -5);
-        this.shape.addPoint(-5, -5);
-        this.shape.addPoint(-5, -8);
-        this.shape.addPoint(5, -8);
-        this.shape.addPoint(5, -5);
-        this.shape.addPoint(10, -5);
-        this.shape.addPoint(15, 0);
-        this.shape.addPoint(10, 5);
-        this.shape.addPoint(-10, 5);
+    public static void setUfo(Ufo ufo){
+        ufo.shape.addPoint(-15, 0);
+        ufo.shape.addPoint(-10, -5);
+        ufo.shape.addPoint(-5, -5);
+        ufo.shape.addPoint(-5, -8);
+        ufo.shape.addPoint(5, -8);
+        ufo.shape.addPoint(5, -5);
+        ufo.shape.addPoint(10, -5);
+        ufo.shape.addPoint(15, 0);
+        ufo.shape.addPoint(10, 5);
+        ufo.shape.addPoint(-10, 5);
     }
 
-    public void initUfo(Game g) {
+    public static void initUfo(Ufo ufo) {
 
         double angle, speed;
 
         // Randomly set flying saucer at left or right edge of the screen.
 
-        this.active = true;
-        this.x = -Sprite.width / 2;
-        this.y = Math.random() * 2 * Sprite.height - Sprite.height;
+        ufo.active = true;
+        ufo.x = -SpaceElement.width / 2;
+        ufo.y = Math.random() * 2 * SpaceElement.height - SpaceElement.height;
         angle = Math.random() * Math.PI / 4 - Math.PI / 2;
         speed = MAX_ROCK_SPEED / 2 + Math.random() * (MAX_ROCK_SPEED / 2);
-        this.deltaX = speed * -Math.sin(angle);
-        this.deltaY = speed *  Math.cos(angle);
+        ufo.deltaX = speed * -Math.sin(angle);
+        ufo.deltaY = speed *  Math.cos(angle);
         if (Math.random() < 0.5) {
-            this.x = Sprite.width / 2;
-            this.deltaX = -this.deltaX;
+            ufo.x = SpaceElement.width / 2;
+            ufo.deltaX = -ufo.deltaX;
         }
-        if (this.y > 0)
-            this.deltaY = this.deltaY;
-        this.render();
+        if (ufo.y > 0)
+            ufo.deltaY = ufo.deltaY;
+        ufo.render();
 
-        g.sounds.saucerPlaying = true;
-        if (g.sound)
-            g.sounds.saucerSound.loop();
+        Game.saucerPlaying = true;
+        if (Game.sound)
+            Game.saucerSound.loop();
 
-        ufoCounter = (int) Math.abs(Sprite.width / this.deltaX);
+        ufoCounter = (int) Math.abs(SpaceElement.width / ufo.deltaX);
     }
 
-    public void updateUfo(Game g) {
+    public static void updateUfo(Ufo ufo, Photon[] photons, Ship ship, Missile missile) {
 
         int i, d;
+        boolean wrapped;
 
         // Move the flying saucer and check for collision with a photon. Stop it
         // when its counter has expired.
 
-        if (this.active)
-        {
-            if (--ufoCounter <= 0) {
-                if (--ufoPassesLeft > 0)
-                    initUfo(g);
-                else
-                    stopUfo(g);
+        if (ufo.active) {
+            if (-- Game.ufoCounter <= 0) {
+                if (--Game.ufoPassesLeft > 0)
+                    initUfo(ufo);
+                //else
+                //stopUfo();                      UNCOMMENT HERE
             }
-            if (this.active)
-            {
-                this.advance();
-                this.render();
-                for (i = 0; i < MAX_SHOTS; i++)
-                    if (g.photons[i].active && this.isColliding(g.photons[i])) {
-                        if (g.sound)
-                            g.sounds.crashSound.play();
-                        g.explode(this);
-                        stopUfo(g);
-                        g.score += UFO_POINTS;
+            if (ufo.active) {
+                ufo.advance();
+                ufo.render();
+                for (i = 0; i < Game.MAX_SHOTS; i++)
+                    if (photons[i].active && ufo.isColliding(photons[i])) {
+                        if (Game.sound)
+                            Game.crashSound.play();
+
+                        Game.explode(ufo);
+                        stopUfo(ufo);
+                        Game.score += Game.UFO_POINTS;
                     }
 
-                // On occassion, fire a missle at the ship if the saucer is not too close to it.
+                // On occassion, fire a missile at the ship if the saucer is not too
+                // close to it.
 
-                d = (int) Math.max(Math.abs(this.x - g.ship.x), Math.abs(this.y - g.ship.y));
-                if (g.ship.active && g.hyperCounter <= 0 &&
-                        this.active && !g.missile.active &&
-                        d > MAX_ROCK_SPEED * FPS / 2 &&
-                        Math.random() < MISSLE_PROBABILITY)
-                    g.missile.initMissile(g);
+                d = (int) Math.max(Math.abs(ufo.x - ship.x), Math.abs(ufo.y - ship.y));
+                if (ship.active && Game.hyperCounter <= 0 &&
+                        ufo.active && !missile.active &&
+                        d > Game.MAX_ROCK_SPEED * Game.FPS / 2 &&
+                        Math.random() < Game.MISSLE_PROBABILITY);
+                Missile.initMissile(missile, ufo);
             }
         }
     }
 
-    public void stopUfo(Game g) {
-
-        this.active = false;
-        if (g.loaded)
-            g.sounds.saucerSound.stop();
-        g.sounds.saucerPlaying = false;
-        ufoCounter = 0;
-        ufoPassesLeft = 0;
+    public static void stopUfo(Ufo ufo) {
+        ufo.active = false;
+        if (Game.loaded)
+            Game.saucerSound.stop();
+        Game.saucerPlaying = false;
+        Game.ufoCounter = 0;
+        Game.ufoPassesLeft = 0;
     }
 }
