@@ -51,7 +51,7 @@ public class Ship extends SpaceElement {
         Game.hyperCounter = 0;
     }
 
-    public static void updateShip(Ship ship, boolean left, boolean right, boolean down, boolean up) {
+    public static void updateShip(Ship ship) {
 
         double dx, dy, speed;
 
@@ -60,12 +60,12 @@ public class Ship extends SpaceElement {
 
         // Rotate the ship if left or right cursor key is down.
 
-        if (left) {
+        if (Game.left) {
             ship.angle += Game.SHIP_ANGLE_STEP;
             if (ship.angle > 2 * Math.PI)
                 ship.angle -= 2 * Math.PI;
         }
-        if (right) {
+        if (Game.right) {
             ship.angle -= Game.SHIP_ANGLE_STEP;
             if (ship.angle < 0)
                 ship.angle += 2 * Math.PI;
@@ -75,27 +75,27 @@ public class Ship extends SpaceElement {
 
         dx = Game.SHIP_SPEED_STEP * -Math.sin(ship.angle);
         dy = Game.SHIP_SPEED_STEP *  Math.cos(ship.angle);
-        if (up) {
+        if (Game.up) {
             ship.deltaX += dx;
             ship.deltaY += dy;
         }
-        if (down) {
+        if (Game.down) {
             ship.deltaX -= dx;
             ship.deltaY -= dy;
         }
 
         // Don't let ship go past the speed limit.
 
-        if (up || down) {
+        if (Game.up || Game.down) {
             speed = Math.sqrt(ship.deltaX * ship.deltaX + ship.deltaY * ship.deltaY);
             if (speed > Game.MAX_SHIP_SPEED) {
                 dx = Game.MAX_SHIP_SPEED * -Math.sin(ship.angle);
                 dy = Game.MAX_SHIP_SPEED *  Math.cos(ship.angle);
-                if (up)
+                if (Game.up)
                     ship.deltaX = dx;
                 else
                     ship.deltaX = -dx;
-                if (up)
+                if (Game.up)
                     ship.deltaY = dy;
                 else
                     ship.deltaY = -dy;
