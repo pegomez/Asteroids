@@ -16,11 +16,11 @@ public class Game extends Applet implements Runnable {
 
     // Copyright information.
     String copyName = "Asteroids";
-    String copyVers = "Version 1.3";
-    String copyInfo = "Copyright 1998-2001 by Mike Hall";
+    String copyVers = "Version 1.4";
+    String copyInfo = "Copyright 1998-2017 by Mike Hall";
     String copyLink = "http://www.brainjar.com";
-    String copyText = copyName + '\n' + copyVers + '\n'
-            + copyInfo + '\n' + copyLink;
+    String thanks   = "Special thanks: Pedro Gomez Lopez, Miguel Angel Sanchez Cifo";
+    String copyText = copyName + '\n' + copyVers + '\n' + copyInfo + '\n' + copyLink;
 
     // Data for the screen font.
     Font font = new Font("Helvetica", Font.BOLD, 12);
@@ -505,6 +505,8 @@ public class Game extends Applet implements Runnable {
             offGraphics.drawString(s, (d.width - fm.stringWidth(s)) / 2, d.height / 2 + fontHeight);
             s = copyLink;
             offGraphics.drawString(s, (d.width - fm.stringWidth(s)) / 2, d.height / 2 + 2 * fontHeight);
+            s = thanks;
+            offGraphics.drawString(s, (d.width - fm.stringWidth(s)) / 2, d.height / 20 * fontHeight);
             if (!loaded) {
                 s = "Loading sounds...";
                 w = 4 * fontWidth + fm.stringWidth(s);
