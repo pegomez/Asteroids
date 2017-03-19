@@ -92,10 +92,10 @@ public class Game extends Applet implements Runnable {
     static boolean detail;
 
     // Key flags.
-    public static boolean left = false;
-    public static boolean right = false;
-    public static boolean up = false;
-    public static boolean down = false;
+    static boolean left = false;
+    static boolean right = false;
+    static boolean up = false;
+    static boolean down = false;
 
     // Sprite objects.
     static Ship ship;
@@ -130,14 +130,14 @@ public class Game extends Applet implements Runnable {
 
 
     // Sound object
-    public static Sound sounds = new Sound();
+    static Sound sounds = new Sound();
 
     // Counter and total used to track the loading of the sound clips.
-    public static int clipTotal  = 0;
-    public static int clipsLoaded = 0;
+    static int clipTotal  = 0;
+    static int clipsLoaded = 0;
 
-
-    public static Keyboard controls = new Keyboard();
+    // Keyboard object
+    static Keyboard controls = new Keyboard();
 
 
     public String getAppletInfo() {
@@ -368,9 +368,7 @@ public class Game extends Applet implements Runnable {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////
     public void update(Graphics g) {
-
         paint(g);
     }
 
